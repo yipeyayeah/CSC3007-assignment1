@@ -1,12 +1,110 @@
 <!DOCTYPE html>
-<html>
-<head>
-<title>Page Title</title>
-</head>
-<body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSC3007 Assignment 1</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto Condensed"
+      rel="stylesheet"
+    />
+  </head>
+  <body onload="populateTable()">
+    <h1
+      style="text-align: center; font-family: Roboto Condensed; font-size: 50px"
+    >
+      PSI Value
+    </h1>
+    <h3
+      id="header_text"
+      style="text-align: center; font-family: Roboto Condensed"
+    ></h3>
 
-<h1>My First Heading</h1>
-<p>My first paragraph.</p>
+    <div class="container">
+      <div class="jumbotron" style="text-align: center">
+        <table
+          class="table table-hover"
+          id="PSIDataTable"
+          style="
+            margin-left: auto;
+            margin-right: auto;
+            font-family: Roboto Condensed;
+            font-size: large;
+          "
+        >
+          <tr>
+            <th scope="col">Metric</th>
+            <th scope="col">National</th>
+            <th scope="col">Central</th>
+            <th scope="col">West</th>
+            <th scope="col">East</th>
+            <th scope="col">North</th>
+            <th scope="col">South</th>
+          </tr>
+        </table>
+      </div>
+    </div>
 
-</body>
+    <script>
+      function populateTable() {
+        fetch("https://api.data.gov.sg/v1/environment/psi")
+          .then((response) => {
+            return response.json();
+          })
+          .then((data) => {
+            var table = document.getElementById("PSIDataTable");
+            // console.log(data.items[0].readings.o3_sub_index.central.length);
+            var update_timestamp = new Date(data.items[0].update_timestamp);
+
+            document.getElementById("header_text").innerHTML =
+              "Last updated: " +
+              update_timestamp.toLocaleDateString() +
+              " " +
+              update_timestamp.toLocaleTimeString();
+            let readings = data.items[0].readings;
+            for (metric in data.items[0].readings) {
+              console.log(metric);
+              var tr = document.createElement("tr");
+              tr.innerHTML =
+                "<td>" +
+                metric +
+                "</td>" +
+                "<td>" +
+                readings[metric].national +
+                "</td>" +
+                "<td>" +
+                readings[metric].central +
+                "</td>" +
+                "<td>" +
+                readings[metric].west +
+                "</td>" +
+                "<td>" +
+                readings[metric].east +
+                "</td>" +
+                "<td>" +
+                readings[metric].north +
+                "</td>" +
+                "<td>" +
+                readings[metric].south +
+                "</td>";
+              table.appendChild(tr);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    </script>
+  </body>
 </html>
